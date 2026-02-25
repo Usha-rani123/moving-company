@@ -10,9 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Moving Company API running");
-});
+// app.get("/", (req, res) => {
+//   res.send("Moving Company API running");
+// });
+//Routes
+const inquiryRoutes = require("./routes/inquiry.routes");
+app.use("/inquiries", inquiryRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

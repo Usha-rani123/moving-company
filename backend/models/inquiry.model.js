@@ -55,6 +55,11 @@ const inquirySchema = new mongoose.Schema(
       required: [true, "Message is required"],
       trim: true,
     },
+    status: {
+      type: String,
+      enum: ["NEW", "CONTACTED", "QUOTED", "BOOKED", "CANCELLED"],
+      default: "NEW",
+    },
   },
   {
     timestamps: true, //  schema option
