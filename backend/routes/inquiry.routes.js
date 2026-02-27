@@ -9,7 +9,7 @@ const router = express.Router();
 // GET /users/ne
 
 // POST /users - Handle form submission to create new user
-router.post("/inquiry", inquiryController.createInquiry);
+router.post("/", inquiryController.createInquiry);
 // GET /inquiries - Display all inquiries
 router.get("/", inquiryController.listInquiries);
 router.put("/:id/status", inquiryController.updateInquiryStatus);

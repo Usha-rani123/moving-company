@@ -1,0 +1,12 @@
+.custom-navbar {
+    background-color: rgba(13, 110, 253, 1);
+  }
+
+  .nav-link-custom {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400; /* same as fw-medium */
+  }
+  
+  .nav-link-custom:hover {
+    color: #ffffff; /* full white on hover */
+  }
