@@ -13,10 +13,12 @@ app.use(express.json());
 // app.get("/", (req, res) => {
 //   res.send("Moving Company API running");
 // });
-//Routes
+//Inquiry Routes
 const inquiryRoutes = require("./routes/inquiry.routes");
 app.use("/inquiries", inquiryRoutes);
-
+//User Routes
+const userRoutes = require("./routes/user.routes");
+app.use("/users", userRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
