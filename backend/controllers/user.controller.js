@@ -1,36 +1,83 @@
 const User = require("../models/user.model");
+const bcrypt = require("bcryptjs");
+
+const jwt = require("jsonwebtoken");
 
 /**
- * POST /users
- * Create new user
+ * POST /users/register
+ * Register new user
  */
-exports.createUser = async (req, res) => {
+exports.registerUser = async (req, res) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, password } = req.body;
 
-    const user = await User.create({ name, email, age });
+    // Check if email already exists
+    const existingUser = await User.findOne({ email });
 
-    return res.status(201).json({
-      message: "User created successfully",
-      user,
-    });
-  } catch (error) {
-    // Validation errors
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({ errors: messages });
-    }
-
-    // Duplicate email
-    if (error.code === 11000) {
+    if (existingUser) {
       return res.status(400).json({
-        message: "Email already exists",
+        message: "Email already registered",
       });
     }
 
-    // Generic error
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    return res.status(201).json({
+      message: "User registered successfully",
+      user,
+    });
+  } catch (error) {
     return res.status(500).json({
-      message: "Error creating user",
+      message: "Error registering user",
+    });
+  }
+};
+/**
+ * POST /users/login
+ * User login
+ */
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error logging in",
+      // error: error.message,
     });
   }
 };
@@ -56,7 +103,7 @@ exports.listUsers = async (req, res) => {
  */
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -78,13 +125,19 @@ exports.getUserById = async (req, res) => {
  */
 exports.updateUser = async (req, res) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, password } = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { name, email, age },
-      { new: true, runValidators: true }
-    );
+    let updateData = { name, email };
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!user) {
       return res.status(404).json({
@@ -97,17 +150,6 @@ exports.updateUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({ errors: messages });
-    }
-
-    if (error.code === 11000) {
-      return res.status(400).json({
-        message: "Email already exists",
-      });
-    }
-
     return res.status(500).json({
       message: "Error updating user",
     });

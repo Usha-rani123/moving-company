@@ -1,27 +1,29 @@
 const express = require("express");
 const userController = require("../controllers/user.controller");
+const auth = require("../middleware/auth.middleware");
 
 const router = express.Router();
+
+// Authentication
+router.post("/register", userController.registerUser);
+router.post("/login", userController.loginUser);
 
 //User Routes
 //Base path: /users
 
 // GET /users/ne
 
-// POST /users - Handle form submission to create new user
-router.post("/", userController.createUser);
-
 // GET /users - Display all users
-router.get("/", userController.listUsers);
+router.get("/", auth, userController.listUsers);
 
 // GET /users/edit/:id - Show form to edit user
 // READ single user
-router.get("/:id", userController.getUserById);
+router.get("/:id", auth, userController.getUserById);
 
 // POST /users/edit/:id - Handle form submission to update an existing user
-router.put("/:id", userController.updateUser);
+router.put("/:id", auth, userController.updateUser);
 
 // POST /users/delete/:id - Handle form submission to delete a user
-router.delete("/:id", userController.deleteUser);
+router.delete("/:id", auth, userController.deleteUser);
 
 module.exports = router;

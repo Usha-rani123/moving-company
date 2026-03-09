@@ -18,8 +18,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Enter a valid email address"],
     },
+    password: {
+      type: String,
+      required: true,
+    },
 
-    age: Number,
+    role: {
+      type: String,
+      enum: ["admin", "customer"],
+      default: "customer",
+    },
   },
   {
     timestamps: true, //  schema option
