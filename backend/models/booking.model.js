@@ -10,7 +10,6 @@ const bookingSchema = new mongoose.Schema(
     inquiryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Inquiry",
-      required: true,
     },
     quoteId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,8 +20,12 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    price: {
+      type: Number,
+    },
     status: {
       type: String,
+      enum: ["BOOKED", "COMPLETED"],
       default: "BOOKED",
     },
   },

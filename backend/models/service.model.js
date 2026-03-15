@@ -12,8 +12,8 @@ const serviceSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: [true, "Email is required"],
-      unique: true,
+      required: [true, "Description is required"],
+
       trim: true,
     },
     imageUrl: {

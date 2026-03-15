@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
  */
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Check if email already exists
     const existingUser = await User.findOne({ email });
@@ -27,6 +27,7 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: role || "customer",
     });
 
     return res.status(201).json({
@@ -35,6 +36,7 @@ exports.registerUser = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
+      error: error.message,
       message: "Error registering user",
     });
   }
@@ -125,9 +127,9 @@ exports.getUserById = async (req, res) => {
  */
 exports.updateUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
-    let updateData = { name, email };
+    let updateData = { name, email, phone };
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -137,7 +139,7 @@ exports.updateUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
-    });
+    }).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -152,6 +154,25 @@ exports.updateUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: "Error updating user",
+    });
+  }
+};
+
+// GET /users/me
+exports.getMyProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching profile",
     });
   }
 };

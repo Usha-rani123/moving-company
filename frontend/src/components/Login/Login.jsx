@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import authService from "../services/AuthService";
+import { useNavigate, Link } from "react-router-dom";
+import authService from "../../services/authService";
 const Login = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   //const [ userName, setUserName] = useState('');
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,7 +13,7 @@ const Login = ({ onLoginSuccess }) => {
   //     onLogin({ email });
   //   }
   // };
-  const isFormValid = username.trim() !== "" && password.trim() !== "";
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
@@ -21,14 +21,19 @@ const Login = ({ onLoginSuccess }) => {
     }
   }, [navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    //console.log(`username: `,username);
 
-    const result = authService.authenticate(username, password);
+    const result = await authService.login(email, password);
 
     if (result.success) {
-      navigate("/dashboard");
+      const user = authService.getUser();
+
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } else {
       setError(result.message);
     }
@@ -61,11 +66,11 @@ const Login = ({ onLoginSuccess }) => {
         <h3 className="card-title text-center mb-4">Login</h3>
         <div className="mb-3">
           <input
-            type="username"
+            type="email"
             className="form-control"
-            placeholder="UserName"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
@@ -89,6 +94,9 @@ const Login = ({ onLoginSuccess }) => {
         >
           Login
         </button>
+        <p className="text-center mt-3">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
+        </p>
         <p className="mt-3 mb-3 text-muted">&copy; 2025-2026</p>
       </form>
     </div>

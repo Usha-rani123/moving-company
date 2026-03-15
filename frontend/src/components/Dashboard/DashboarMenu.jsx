@@ -53,6 +53,30 @@ function DashboardMenu() {
               Quick Quote
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/dashboard/orders"
+              className={({ isActive }) =>
+                `nav-link ${
+                  isActive ? "active bg-primary text-white" : "link-dark"
+                }`
+              }
+            >
+              View Orders
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/dashboard/profile"
+              className={({ isActive }) =>
+                `nav-link ${
+                  isActive ? "active bg-primary text-white" : "link-dark"
+                }`
+              }
+            >
+              Profile
+            </NavLink>
+          </li>
         </ul>
       </div>
 

@@ -1,9 +1,9 @@
 import "./Landingpage.css";
 import React from "react";
 import { Link } from "react-router-dom";
-import moving1 from "../assets/moving1.jpg";
+import moving1 from "../../assets/moving1.jpg";
 
-const Landingpage = () => {
+function Landingpage() {
   return (
     <>
       <div>
@@ -210,19 +210,19 @@ const Landingpage = () => {
         {/* Footer */}
 
         <footer className="footer-section">
-          <div className="container py-3">
+          <div className="container ">
             <div className="row">
               {/* Logo + Social */}
-              <div className="col-md-3 mb-3">
+              <div className="col-md-3 mb-2">
                 <h2 className="footer-logo">Moving Company</h2>
                 {/* <hr className="footer-line" /> */}
                 {/* <p className="mt-3">Follow us on</p> */}
                 <div className="social-icons">
                   {/* <i className="bi bi-facebook"></i>
-                  <i className="bi bi-twitter"></i>
-                  <i className="bi bi-instagram"></i>
-                  <i className="bi bi-linkedin"></i>
-                  <i className="bi bi-youtube"></i> */}
+            <i className="bi bi-twitter"></i>
+            <i className="bi bi-instagram"></i>
+            <i className="bi bi-linkedin"></i>
+            <i className="bi bi-youtube"></i> */}
                 </div>
               </div>
 
@@ -230,7 +230,10 @@ const Landingpage = () => {
               <div className="col-md-3 mb-2 mt-2">
                 <h5>Company</h5>
                 <ul className="footer-links">
-                  <li>About Us</li>
+                  <Link to="/about">
+                    {" "}
+                    <li>About Us</li>{" "}
+                  </Link>
                   <li>Careers</li>
                 </ul>
               </div>
@@ -267,6 +270,6 @@ const Landingpage = () => {
       </div>
     </>
   );
-};
+}
 
 export default Landingpage;

@@ -15,7 +15,8 @@ router.post("/login", userController.loginUser);
 
 // GET /users - Display all users
 router.get("/", auth, userController.listUsers);
-
+//my profile
+router.get("/me", auth, userController.getMyProfile);
 // GET /users/edit/:id - Show form to edit user
 // READ single user
 router.get("/:id", auth, userController.getUserById);

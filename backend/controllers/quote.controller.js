@@ -6,13 +6,36 @@ const Quote = require("../models/quote.model");
  */
 exports.createQuote = async (req, res) => {
   try {
-    const { inquiryId, price, remarks, status } = req.body;
+    const { service, fromLocation, toLocation, houseType, moveDate } = req.body;
+
+    if (!service || !fromLocation || !toLocation || !moveDate) {
+      return res.status(400).json({
+        message:
+          "Service, From Location, To Location and Move Date are required",
+      });
+    }
+
+    if (service === "House Shifting" && !houseType) {
+      return res.status(400).json({
+        message: "House type is required for house shifting",
+      });
+    }
+
+    // Calculate estimated price
+    let estimatedPrice = 3000;
+
+    if (houseType === "2 BHK") estimatedPrice += 1000;
+    if (houseType === "3 BHK") estimatedPrice += 2000;
+    if (houseType === "Villa") estimatedPrice += 3000;
 
     const quote = await Quote.create({
-      inquiryId,
-      price,
-      remarks,
-      status,
+      userId: req.user.id,
+      service,
+      fromLocation,
+      toLocation,
+      houseType,
+      moveDate,
+      estimatedPrice,
     });
 
     return res.status(201).json({
@@ -20,19 +43,35 @@ exports.createQuote = async (req, res) => {
       data: quote,
     });
   } catch (error) {
-    return res.status(500).json({
+    console.error(error);
+
+    res.status(500).json({
       message: "Error creating quote",
     });
   }
 };
-
 /**
  * GET /quotes
  * Get all quotes
  */
+exports.getCustomerQuotes = async (req, res) => {
+  try {
+    const quotes = await Quote.find({
+      userId: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(quotes);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching quotes",
+    });
+  }
+};
 exports.listQuotes = async (req, res) => {
   try {
-    const quotes = await Quote.find().sort({ createdAt: -1 });
+    const quotes = await Quote.find()
+      .populate("userId", "name email") // fetch customer info
+      .sort({ createdAt: -1 });
 
     return res.status(200).json(quotes);
   } catch (error) {
@@ -42,18 +81,10 @@ exports.listQuotes = async (req, res) => {
   }
 };
 
+// Get Quote by Id
 exports.getQuoteById = async (req, res) => {
   try {
-    const { price, remarks, status } = req.body;
-    const updateData = {
-      price,
-      remarks,
-      status,
-    };
-    const quote = await Quote.findById(req.params.id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const quote = await Quote.findById(req.params.id);
     if (!quote) {
       return res.status(404).json({
         message: "Quote not found",
@@ -68,34 +99,23 @@ exports.getQuoteById = async (req, res) => {
   }
 };
 
+// Update Quote
 exports.updateQuote = async (req, res) => {
   try {
-    const { price, remarks, status } = req.body;
-    const updateData = {
-      price,
-      remarks,
-      status,
-    };
+    const { finalPrice, remarks } = req.body;
 
-    const quote = await Quote.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const quote = await Quote.findByIdAndUpdate(
+      req.params.id,
+      { finalPrice, remarks, status: "QUOTED" },
+      { new: true }
+    );
 
-    if (!quote) {
-      return res.status(404).json({
-        message: "Quote not found",
-      });
-    }
-
-    return res.status(200).json({
-      message: "Quote updated successfully",
-      quote,
+    res.json({
+      message: "Quote updated",
+      data: quote,
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Error updating quote",
-    });
+    res.status(500).json({ message: "Error updating quote" });
   }
 };
 

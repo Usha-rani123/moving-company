@@ -1,14 +1,16 @@
-import "./Landingpage.css"; // or Navbar.css
+import "./Pages/Landingpage.css";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import authService from "../services/AuthService";
+import authService from "../services/authService";
 const Topbar = () => {
   const navigate = useNavigate();
-  const isLoggedIn = authService.isAuthenticated();
 
+  const isLoggedIn = authService.isAuthenticated();
   const handleLogout = () => {
-    authService.logout(); // clear storage/session
+    authService.logout();
     navigate("/");
   };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark custom-navbar  shadow-sm sticky-top ">
       {/* your full navbar code here */}

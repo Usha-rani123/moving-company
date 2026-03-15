@@ -1,5 +1,6 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createInquiry, listServices } from "../../services/apiServices";
 const ReqForService = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,7 +13,23 @@ const ReqForService = () => {
     moveDate: "",
     message: "",
   });
+  const [services, setServices] = useState([]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    loadServices();
+  }, []);
+  const loadServices = async () => {
+    try {
+      const data = await listServices();
+
+      console.log("Services API response:", data);
+
+      setServices(data);
+    } catch (error) {
+      console.error("Error loading services:", error);
+    }
+  };
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -20,7 +37,7 @@ const ReqForService = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -31,21 +48,28 @@ const ReqForService = () => {
       formData.toLocation &&
       formData.moveDate
     ) {
-      console.log("Inquiry Data:", formData);
+      try {
+        const result = await createInquiry(formData);
 
-      alert("Request submitted successfully");
+        console.log("API Response:", result);
 
-      setFormData({
-        name: "",
-        email: "",
-        mobile: "",
-        service: "",
-        fromLocation: "",
-        toLocation: "",
-        houseType: "",
-        moveDate: "",
-        message: "",
-      });
+        alert("Request submitted successfully");
+        navigate("/dashboard/quickquote");
+        setFormData({
+          name: "",
+          email: "",
+          mobile: "",
+          service: "",
+          fromLocation: "",
+          toLocation: "",
+          houseType: "",
+          moveDate: "",
+          message: "",
+        });
+      } catch (error) {
+        console.error("Inquiry error:", error);
+        alert(error.message);
+      }
     } else {
       alert("Please fill all required fields");
     }
@@ -99,9 +123,11 @@ const ReqForService = () => {
             onChange={handleChange}
           >
             <option value="">Select Service</option>
-            <option>House Shifting</option>
-            <option>Office Relocation</option>
-            <option>Vehicle Transport</option>
+            {services.map((service) => (
+              <option key={service._id} value={service.title}>
+                {service.title}
+              </option>
+            ))}
           </select>
         </div>
 

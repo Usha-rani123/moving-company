@@ -29,6 +29,14 @@ exports.createInquiry = async (req, res) => {
       data: inquiry,
     });
   } catch (error) {
+    // Duplicate key error
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+
+      return res.status(400).json({
+        message: `${field} already exists`,
+      });
+    }
     // Validation errors
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((val) => val.message);
