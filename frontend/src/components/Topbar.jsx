@@ -40,33 +40,33 @@ const Topbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav ms-auto align-items-lg-center gap-lg-3 mb-2 mb-lg-0">
             <li className="nav-item">
-              <a className="nav-link-custom active " href="#">
+              <Link to="/" className="nav-link-custom active ">
                 Home
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link-custom" href="#">
+              <Link to="/services" className="nav-link-custom">
                 Services
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link-custom" href="#">
+              <Link to="/prices" className="nav-link-custom" h>
                 Prices
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link-custom" href="#">
+              <Link to="/contact" className="nav-link-custom">
                 Contacts
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link-custom" href="#">
+              <Link to="/dashboard/quickquote" className="nav-link-custom">
                 Quick Quote
-              </a>
+              </Link>
             </li>
 
             <li className="nav-item ms-lg-3">

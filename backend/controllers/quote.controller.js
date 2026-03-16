@@ -23,7 +23,7 @@ exports.createQuote = async (req, res) => {
 
     // Calculate estimated price
     let estimatedPrice = 3000;
-
+    if (houseType === "1 BHK") estimatedPrice += 500;
     if (houseType === "2 BHK") estimatedPrice += 1000;
     if (houseType === "3 BHK") estimatedPrice += 2000;
     if (houseType === "Villa") estimatedPrice += 3000;
